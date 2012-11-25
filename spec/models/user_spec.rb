@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe User do
-  before { @user = User.new(name: "Example User", email: "user@example.com", password: 'foobar', password_confirmation: 'foobar' }
+  before { @user = User.new name: "Example User", email: "user@example.com", password: 'foobar123', password_confirmation: 'foobar123' }
 
   subject { @user }
 
@@ -9,6 +9,8 @@ describe User do
   it { should respond_to :email }
   it { should respond_to :password_digest }
   it { should respond_to :password_confirmation }
+  it { should respond_to :authenticate }
+  it { should respond_to :password_digest }
   it { should be_valid }
 
   describe 'when name not present' do
@@ -57,6 +59,28 @@ describe User do
       user_same_email = @user.dup
       user_same_email.save!
     }
+    it { should_not be_valid }
+  end
+
+  describe "return value of authenticate method" do
+    before { @user.save! }
+    let(:found_user) { User.find_by_email @user.email }
+
+    describe "with valid password" do
+      puts @user
+      it { should == found_user.authenticate(@user.password) }
+    end
+
+    describe 'with invalid password' do
+      let (:user_for_invalid_password) { found_user.authenticate 'invalid' }
+
+      it { should_not == user_for_invalid_password }
+      specify { user_for_invalid_password.should be_false }
+    end
+  end
+
+  describe 'with too short password' do
+    before { @user.password = 'a'*5 }
     it { should_not be_valid }
   end
 end
