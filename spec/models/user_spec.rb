@@ -10,7 +10,6 @@ describe User do
   it { should respond_to :password_digest }
   it { should respond_to :password_confirmation }
   it { should respond_to :authenticate }
-  it { should respond_to :password_digest }
   it { should be_valid }
 
   describe 'when name not present' do
@@ -67,7 +66,6 @@ describe User do
     let(:found_user) { User.find_by_email @user.email }
 
     describe "with valid password" do
-      puts @user
       it { should == found_user.authenticate(@user.password) }
     end
 
